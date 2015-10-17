@@ -24,3 +24,19 @@ stepsEachDay <- with(data_no_NAs, tapply(steps, as.factor(date), sum, na.rm = TR
 hist(stepsEachDay, main = "Number of days with each step count", xlab = "Steps", ylab = "Days")
 summary(stepsEachDay)
 ```
+
+## What is the average daily pattern?
+
+In the above question we looked at the data sliced into days and we started to see how many days were really active, how many were not, and what the average level of activity per day is. But now we're going to look at something different. On average, what are the activity levels like based on time of day? (The data is in five minute chunks on a 24 clock. So 2255 can be interpreted as "22:55" - or 10:55pm.)
+```{r}
+avgStepsByInterval <- with(data_no_NAs, aggregate(steps, list(interval), mean))
+plot(avgStepsByInterval[,1], avgStepsByInterval[,2], type = "l", xlab = "Time Interval", ylab = "Avg Steps")
+# isolate coordinates of where the maximum value is so we can label it on the plot
+maxStepsRow <- which.max(avgStepsByInterval[,2])
+maxStepsX <- avgStepsByInterval[maxStepsRow,1]
+maxStepsY <- avgStepsByInterval[maxStepsRow,2]
+points(maxStepsX, maxStepsY, pch = 19, col = "red")
+text(maxStepsX, maxStepsY, labels = paste("@ Time interval ", maxStepsX), pos = 4)
+```
+
+Most active at 8:35am. Looks like we got an early bird!
