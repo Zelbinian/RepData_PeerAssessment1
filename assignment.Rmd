@@ -1,0 +1,8 @@
+---
+title: "assignment1"
+author: "Dustin L. Hodge"
+date: "Friday, October 16, 2015"
+output: html_document
+---
+
+
