@@ -5,4 +5,22 @@ date: "Friday, October 16, 2015"
 output: html_document
 ---
 
+# Setup
 
+Before analysis can be done, we have to load in and clean up the data. At this point all we need to do is make a separate data set that omits the na values. (We keep both data sets so we can use each one as needed.)
+
+```{r}
+data <- read.csv("./activity.csv")
+data_no_NAs <- data[complete.cases(data),]
+```
+
+# Analysis Questions
+
+## What is the mean number of steps taken per day?
+
+This histogram shows the rough distribution of how many days had a rough step count, which provides context for the summary statistics that follow.
+```{r}
+stepsEachDay <- with(data_no_NAs, tapply(steps, as.factor(date), sum, na.rm = TRUE))
+hist(stepsEachDay, main = "Number of days with each step count", xlab = "Steps", ylab = "Days")
+summary(stepsEachDay)
+```
