@@ -89,3 +89,29 @@ summary(stepsEachDay_i)
 The mean remains unchanged, but the median has shifted over as a result of us adding in several identical days that are all exactly the mean. The chart reflects this, too; the imputed data just served to make the middle bar larger (as opposed to uniformly scaling the data set).
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Good question! Let's first make a factor variable so we can tell which data are from weekdays and which are from weekends.
+
+
+```r
+data_imputed$daytype <- as.factor(ifelse(weekdays(as.Date(data_imputed$date)) %in% c("Saturday", "Sunday"),
+                                         "weekend", 
+                                         "weekday"))
+```
+
+That looks complicated only because of all the typecasting we needed to do, but the end result is a new column with a factor variable called daytype, with levels "weekday" or "weekend" as appropriate. Now lets use the lattice package to see how the data differs based on this new factor variable.
+
+
+```r
+library("lattice")
+avgStepsIntAndWkdy <- with(data_imputed, aggregate(steps, list(interval = interval, daytype = daytype), mean))
+names(avgStepsIntAndWkdy)[3] <- "steps"
+xyplot(steps ~ interval | daytype,
+        data = avgStepsIntAndWkdy,
+        type = "l",
+        layout = c(1,2))
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
+There does seem to be some difference in activity. In particular, the activity starts gearing up a lot later on the weekends and, though never peeks as highly as it does during the week, is overall much mroe sustained going into the evening hours.
