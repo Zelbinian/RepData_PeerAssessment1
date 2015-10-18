@@ -52,6 +52,40 @@ Most active at 8:35am. Looks like we got an early bird!
 
 ## Imputing missing values
 
+The original dataset has some missing values. We've worked around those so far, but let's see what we can do to come up with new values that make sense. Luckily, in the last step we've constructed ourselves a pretty good lookup table - for every time interval, we know the average steps taken. In general this is not a good idea, but is defensible for our purposes.
 
+First we have to do the work to impute the data by subsetting the NAs, replacing them with values from the lookup table, and then merging that with the no NAs subset we made earlier. The imputed data set will then be at parity with the original.
+
+
+```r
+NAs <- data[is.na(data),] # grab the NAs so we can replace them
+names(avgStepsByInterval) <- c("interval","steps") # renaming columns for merge
+imputedNAs <- merge(avgStepsByInterval, NAs, by = "interval")
+imputedNAs$steps.y <- NULL # dropping the unnecessary column created by merge
+names(imputedNAs)[2] <- "steps"
+data_imputed <- rbind(data_no_NAs, imputedNAs) # combining into one data frame
+data_imputed <- with(data_imputed, data_imputed[order(date, interval),]) # re-order data
+```
+
+Now that we've done that, we can re-compute the histograms and summary statistics to find out the steps/day and see if there's any significant differences in the imputed data set.
+
+
+```r
+stepsEachDay_i <- with(data_imputed, tapply(steps, as.factor(date), sum, na.rm = TRUE))
+hist(stepsEachDay_i, main = "Number of days with each step count", xlab = "Steps", ylab = "Days")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+```r
+summary(stepsEachDay_i)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10770   10770   12810   21190
+```
+
+The mean remains unchanged, but the median has shifted over as a result of us adding in several identical days that are all exactly the mean. The chart reflects this, too; the imputed data just served to make the middle bar larger (as opposed to uniformly scaling the data set).
 
 ## Are there differences in activity patterns between weekdays and weekends?
